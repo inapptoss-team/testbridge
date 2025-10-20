@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Puzzle 03 - THE GRADUATE ESCAPE</title>
+    <link rel="stylesheet" href="../css/index.css">
+</head>
+<body>
+    <main class="puzzle-container">
+        <div class="mirror-puzzle-container" id="mirrorPuzzleContainer">
+          <h3>거울 속의 비밀</h3>
+          <p>각 원소의 원자번호를 순서대로 입력하세요.</p>
+          
+          <div class="puzzle-area">
+            <div class="mirror-puzzle">
+              <div class="mirror-image-container">
+                <img src="../img/거울.png" alt="거울" class="mirror-image" id="mirrorImage">
+              </div>
+              
+              <div class="mirror-input-area">
+                <input type="text" class="mirror-code-input" id="mirrorCodeInput" maxlength="7" placeholder="_ _ _ _" autocomplete="off">
+              </div>
+              
+              <div class="puzzle-feedback" id="puzzleFeedback"></div>
+              
+              <button class="btn confirm-puzzle-btn" id="confirmMirrorPuzzle">확인</button>
+            </div>
+          </div>
+        </div>
+    </main>
+    <script src="../js/main.js"></script>
+</body>
+</html>
+

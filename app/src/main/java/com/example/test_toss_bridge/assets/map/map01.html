@@ -1,0 +1,64 @@
+<!-- 게임 맵(1) -->
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> Stage1 실험실 탈출 </title>
+    <link rel="stylesheet" href="../css/index.css">
+</head>
+<body>
+    <main class="poster">
+        <div class="scene">
+            <header class="game-header">
+
+                <!-- 게임 리셋 버튼 (개발용) -->
+                <button onclick="window.puzzleManager.resetProgress(); location.reload();" 
+                        style="position: fixed; top: 10px; right: 10px; z-index: 9999; 
+                               background: #ff6b6b; color: white; border: none; padding: 10px; 
+                               border-radius: 5px; cursor: pointer;">
+                    초기화
+                </button>
+            </header>
+            <div class="map-container">
+                <div class="map-content">
+                    <img src="../img/실험실.png" alt="실험실 이미지" class="lab-image">
+                    
+                    <!-- 상호작용 가능한 영역들 -->
+                    <div class="interactive-areas">
+
+                        <!-- 퍼즐 -->
+                        <div class="interactive-btn map-desk" data-object="책상" data-puzzle="chair-puzzle"></div>
+                        <div class="interactive-btn map-cabinet" data-object="캐비넷" data-puzzle="cabinet-puzzle"></div>
+                        <div class="interactive-btn map-mirror" data-object="거울" data-puzzle="mirror-puzzle"></div>
+                        <div class="interactive-btn map-storage" data-object="창고" data-puzzle="storage-clue"></div>
+                        <div class="interactive-btn map-paper" data-object="종이" data-puzzle="paper-clue" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 퍼즐 모달 -->
+            <div class="puzzle-modal" id="puzzleModal">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h2 class="modal-title" id="modalTitle">퍼즐</h2>
+                    <button class="close-btn" id="closeModal">&times;</button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="puzzle-content" id="puzzleContent">
+                      <!-- 퍼즐 내용이 여기에 동적으로 로드됩니다 -->
+                    </div>
+                    <div class="puzzle-actions">
+                      <input type="text" class="puzzle-input" id="puzzleInput" placeholder="답을 입력하세요">
+                      <button class="submit-btn" id="submitAnswer">제출</button>
+                    </div>
+                    
+                  </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script type="module" src="../js/main.js"></script>
+    <script type="module" src="../js/stage01/lab-map-interactions.js"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Puzzle 01 - THE GRADUATE ESCAPE</title>
+    <link rel="stylesheet" href="../css/index.css">
+</head>
+<body>
+    <main class="puzzle-container">
+        <div class="chair-puzzle-container" id="chairPuzzleContainer">
+          <h3>의자를 원형 탁자에 배치하세요</h3>
+          <p>의자를 배치하면 0, 보관함에 두면 1이 됩니다.</p>
+          
+          <div class="puzzle-area">
+            <div class="arrangement-area circular-table">
+              <canvas id="pixelCircle" width="300px" height="300px"></canvas>
+
+              <div class="table-center"></div>
+              
+              <div class="drop-zone" data-position="1"><div class="chair-item" data-chair="1"><div class="chair-label">1</div></div></div>
+              <div class="drop-zone" data-position="2"><div class="chair-item" data-chair="2"><div class="chair-label">2</div></div></div>
+              <div class="drop-zone" data-position="3"><div class="chair-item" data-chair="3"><div class="chair-label">3</div></div></div>
+              <div class="drop-zone" data-position="4"><div class="chair-item" data-chair="4"><div class="chair-label">4</div></div></div>
+              <div class="drop-zone" data-position="5"><div class="chair-item" data-chair="5"><div class="chair-label">5</div></div></div>
+              <div class="drop-zone" data-position="6"><div class="chair-item" data-chair="6"><div class="chair-label">6</div></div></div>
+              <div class="drop-zone" data-position="7"><div class="chair-item" data-chair="7"><div class="chair-label">7</div></div></div>
+              <div class="drop-zone" data-position="8"><div class="chair-item" data-chair="8"><div class="chair-label">8</div></div></div>
+            </div>
+          </div>
+          
+          <div class="puzzle-feedback" id="puzzleFeedback"></div>
+          <button class="btn confirm-puzzle-btn" id="confirmChairPuzzle">확인</button>
+        </div>
+    </main>
+    <script src="../js/main.js"></script>
+</body>
+</html>

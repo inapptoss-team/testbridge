@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Puzzle 02 - THE GRADUATE ESCAPE</title>
+    <link rel="stylesheet" href="../css/index.css">
+</head>
+<body>
+    <main class="puzzle-container">
+        <div class="cabinet-puzzle-container" id="cabinetPuzzleContainer">
+          <h3>캐비넷의 자물쇠를 열어주세요</h3>
+          <p>올바른 원소를 선택하면 자물쇠가 열립니다.</p>
+          
+          <div class="puzzle-area">
+            <div class="cabinet-lock">
+              <div class="lock-image-container">
+                <img src="../img/잠긴자물쇠.png" alt="자물쇠" class="lock-image" id="lockImage">
+              </div>
+              
+              <div class="element-choices" id="elementChoices">
+                <button class="element-btn" data-element="Ga">▶ Ga (갈륨)</button>
+                <button class="element-btn" data-element="Hg">▶ Hg (수은)</button>
+                <button class="element-btn" data-element="K">▶ K (칼륨)</button>
+                <button class="element-btn" data-element="Li">▶ Li (리튬)</button>
+                <button class="element-btn" data-element="C2H5OH">▶ C₂H₅OH (에탄올)</button>
+              </div>
+              
+              <div class="puzzle-feedback" id="puzzleFeedback"></div>
+            </div>
+          </div>
+        </div>
+    </main>
+    <script src="../js/main.js"></script>
+</body>
+</html>
+
