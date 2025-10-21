@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     scene.classList.add('flicker-out');
                                 }
                                 setTimeout(() => {
-                                    window.location.href = '/map/map01.html';
+                                    window.location.href = '../map/map01.html';
                                 }, 1000); // match flicker-out animation duration
                             }, 2000);
                         });
