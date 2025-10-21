@@ -1,4 +1,4 @@
-import puzzleManager from '../puzzles/puzzle-manager.js';
+import puzzleManager from '../api/puzzle-manager-api.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const interactiveElements = document.querySelectorAll('[data-puzzle]');
