@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (exploreBtn) {
     exploreBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.href = './assets/lab/intro.html';
+      window.location.href = './lab/intro.html';
     });
   }
 

@@ -20,7 +20,9 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDomStorageEnabled(true);
         webSettings.setAllowFileAccess(true);
+        webSettings.setAllowFileAccessFromFileURLs(true);
+        webSettings.setAllowUniversalAccessFromFileURLs(true);
 
-        webView.loadUrl("file:///android_asset/lab/index.html");
+        webView.loadUrl("file:///android_asset/index.html");
     }
 }
