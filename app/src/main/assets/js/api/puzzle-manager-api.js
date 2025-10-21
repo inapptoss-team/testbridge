@@ -97,15 +97,15 @@ class PuzzleManagerAPI {
             } else if (puzzle.type === 'drag-drop') {
                 this.puzzleInput.style.display = 'none';
                 this.submitBtn.style.display = 'none';
-                this.loadHtmlPuzzle('../puzzles/puzzle01.html', '.chair-puzzle-container', objectName, this.initChairPuzzle.bind(this), false);
+                this.loadHtmlPuzzle('../../puzzles/puzzle01.html', '.chair-puzzle-container', objectName, this.initChairPuzzle.bind(this), false);
             } else if (puzzle.type === 'cabinet-lock') {
                 this.puzzleInput.style.display = 'none';
                 this.submitBtn.style.display = 'none';
-                this.loadHtmlPuzzle('../puzzles/puzzle02.html', '.cabinet-puzzle-container', objectName, this.initCabinetPuzzle.bind(this), false);
+                this.loadHtmlPuzzle('../../puzzles/puzzle02.html', '.cabinet-puzzle-container', objectName, this.initCabinetPuzzle.bind(this), false);
             } else if (puzzle.type === 'mirror-code') {
                 this.puzzleInput.style.display = 'none';
                 this.submitBtn.style.display = 'none';
-                this.loadHtmlPuzzle('../puzzles/puzzle03.html', '.mirror-puzzle-container', objectName, this.initMirrorPuzzle.bind(this), false);
+                this.loadHtmlPuzzle('../../puzzles/puzzle03.html', '.mirror-puzzle-container', objectName, this.initMirrorPuzzle.bind(this), false);
             } else {
                 this.puzzleContent.innerHTML = `<p>${puzzle.question}</p>`;
                 this.puzzleInput.style.display = 'block';
@@ -455,11 +455,10 @@ class PuzzleManagerAPI {
     }
 
     /**
-     * 잠긴 퍼즐 처리 (기존 로직 유지)
+     * 잠긴 퍼즐 처리
      */
     showLockedWithHandler(puzzleId) {
-        // 기존 로직 유지
-        import('../stage01/mirror.js').then(module => {
+        import('../../stage01/mirror.js').then(module => {
             if (puzzleId === 'mirror-puzzle') {
                 module.handleMirror(this.modalTitle, this.puzzleContent, this.puzzleInput, this.submitBtn);
                 this.puzzleModal.classList.add('show');
@@ -467,8 +466,33 @@ class PuzzleManagerAPI {
         }).catch(error => {
             console.error('mirror.js import 실패:', error);
         });
+
+        import('../../stage01/cabinet.js').then(module => {
+            if (puzzleId === 'cabinet-puzzle') {
+                module.handleCabinet(this.modalTitle, this.puzzleContent, this.puzzleInput, this.submitBtn);
+                this.puzzleModal.classList.add('show');
+            }
+        }).catch(error => {
+            console.error('cabinet.js import 실패:', error);
+        });
         
-        // 다른 퍼즐들도 유사하게 처리...
+        import('../../stage01/storage.js').then(module => {
+            if (puzzleId === 'storage-clue') {
+                module.handleStorage(this.modalTitle, this.puzzleContent, this.puzzleInput, this.submitBtn);
+                this.puzzleModal.classList.add('show');
+            }
+        }).catch(error => {
+            console.error('storage.js import 실패:', error);
+        });
+        
+        import('../../stage01/paper.js').then(module => {
+            if (puzzleId === 'paper-clue') {
+                module.handlePaper(this.modalTitle, this.puzzleContent, this.puzzleInput, this.submitBtn);
+                this.puzzleModal.classList.add('show');
+            }
+        }).catch(error => {
+            console.error('paper.js import 실패:', error);
+        });
     }
 
     /**
@@ -511,40 +535,18 @@ class PuzzleManagerAPI {
             }, 300);
         }, duration);
     }
-
+    
     /**
-     * 오류 메시지 표시
+     * 에러 메시지 표시
      */
     showError(message) {
-        this.showNotification(`❌ ${message}`, 5000);
-    }
-
-    /**
-     * 진행 상태 리셋
-     */
-    async resetProgress() {
-        try {
-            await gameAPI.resetProgress();
-            await this.loadPlayerPuzzles();
-            console.log('진행 상태가 리셋되었습니다.');
-        } catch (error) {
-            console.error('진행 상태 리셋 실패:', error);
-            this.showError('진행 상태 리셋에 실패했습니다.');
-        }
-    }
-
-    /**
-     * 모든 퍼즐 잠금 해제
-     */
-    async unlockAll() {
-        try {
-            await gameAPI.unlockAll();
-            await this.loadPlayerPuzzles();
-            console.log('모든 퍼즐이 잠금 해제되었습니다.');
-        } catch (error) {
-            console.error('퍼즐 잠금 해제 실패:', error);
-            this.showError('퍼즐 잠금 해제에 실패했습니다.');
-        }
+        this.modalTitle.textContent = '오류';
+        this.puzzleContent.innerHTML = `<p style="color: #ff6b6b;">${message}</p>`;
+        this.puzzleInput.style.display = 'none';
+        this.submitBtn.style.display = 'block';
+        this.submitBtn.textContent = '닫기';
+        this.submitBtn.onclick = () => this.hide();
+        this.puzzleModal.classList.add('show');
     }
 }
 
