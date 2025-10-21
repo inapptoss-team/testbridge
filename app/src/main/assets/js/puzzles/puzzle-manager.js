@@ -78,25 +78,25 @@ class PuzzleManager {
             } else if (puzzle.type === 'drag-drop') {
                  this.puzzleInput.style.display = 'none';
                  this.submitBtn.style.display = 'none';
-                 this.loadHtmlPuzzle('../puzzles/puzzle01.html', '.chair-puzzle-container', objectName, this.initChairPuzzle.bind(this), false);
+                 this.loadHtmlPuzzle('/assets/puzzles/puzzle01.html', '.chair-puzzle-container', objectName, this.initChairPuzzle.bind(this), false);
             } else if (puzzle.type === 'cabinet-lock') {
                  this.puzzleInput.style.display = 'none';
                  this.submitBtn.style.display = 'none';
-                 this.loadHtmlPuzzle('../puzzles/puzzle02.html', '.cabinet-puzzle-container', objectName, this.initCabinetPuzzle.bind(this), false);
+                 this.loadHtmlPuzzle('/assets/puzzles/puzzle02.html', '.cabinet-puzzle-container', objectName, this.initCabinetPuzzle.bind(this), false);
             } else if (puzzle.type === 'mirror-code') {
                  this.puzzleInput.style.display = 'none';
                  this.submitBtn.style.display = 'none';
-                 this.loadHtmlPuzzle('../puzzles/puzzle03.html', '.mirror-puzzle-container', objectName, this.initMirrorPuzzle.bind(this), false);
+                 this.loadHtmlPuzzle('/assets/puzzles/puzzle03.html', '.mirror-puzzle-container', objectName, this.initMirrorPuzzle.bind(this), false);
             } else if (puzzle.type === 'storage-clue') {
                  this.puzzleInput.style.display = 'none';
                  this.submitBtn.style.display = 'none';
-                 this.loadHtmlPuzzle('../puzzles/clue01.html', '.storage-clue-container', objectName, () => {
+                 this.loadHtmlPuzzle('/assets/puzzles/clue01.html', '.storage-clue-container', objectName, () => {
                      this.completePuzzle('storage-clue');
                  }, false);
             } else if (puzzle.type === 'paper-clue') {
                  this.puzzleInput.style.display = 'none';
                  this.submitBtn.style.display = 'none';
-                 this.loadHtmlPuzzle('../puzzles/clue02.html', '.paper-clue-container', objectName, () => {
+                 this.loadHtmlPuzzle('/assets/puzzles/clue02.html', '.paper-clue-container', objectName, () => {
                      this.completePuzzle('paper-clue');
                  }, false);
             } else {
@@ -539,7 +539,7 @@ class PuzzleManager {
                             lockImage.style.transition = 'opacity 0.5s ease';
                             
                             setTimeout(() => {
-                                lockImage.src = '../img/부식된자물쇠.png';
+                                lockImage.src = '/assets/img/부식된자물쇠.png';
                                 lockImage.style.opacity = '1';
                                 feedback.textContent = ` ${puzzle.successMessage}`;
                                 feedback.classList.add('show');
@@ -676,7 +676,7 @@ class PuzzleManager {
     }
     
     showLockedWithHandler(puzzleId) {
-        import('../stage01/mirror.js').then(module => {
+        import('/assets/js/stage01/mirror.js').then(module => {
             if (puzzleId === 'mirror-puzzle') {
                 module.handleMirror(this.modalTitle, this.puzzleContent, this.puzzleInput, this.submitBtn);
                 this.puzzleModal.classList.add('show');
@@ -685,7 +685,7 @@ class PuzzleManager {
             console.error('mirror.js import 실패:', error);
         });
         
-        import('../stage01/cabinet.js').then(module => {
+        import('/assets/js/stage01/cabinet.js').then(module => {
             if (puzzleId === 'cabinet-puzzle') {
                 module.handleCabinet(this.modalTitle, this.puzzleContent, this.puzzleInput, this.submitBtn);
                 this.puzzleModal.classList.add('show');
@@ -694,7 +694,7 @@ class PuzzleManager {
             console.error('cabinet.js import 실패:', error);
         });
         
-        import('../stage01/storage.js').then(module => {
+        import('/assets/js/stage01/storage.js').then(module => {
             if (puzzleId === 'storage-clue') {
                 module.handleStorage(this.modalTitle, this.puzzleContent, this.puzzleInput, this.submitBtn);
                 this.puzzleModal.classList.add('show');
@@ -703,7 +703,7 @@ class PuzzleManager {
             console.error('storage.js import 실패:', error);
         });
         
-        import('../stage01/paper.js').then(module => {
+        import('/assets/js/stage01/paper.js').then(module => {
             if (puzzleId === 'paper-clue') {
                 module.handlePaper(this.modalTitle, this.puzzleContent, this.puzzleInput, this.submitBtn);
                 this.puzzleModal.classList.add('show');
