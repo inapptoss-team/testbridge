@@ -1,16 +1,22 @@
 /**
- * 게임 API 클라이언트
- * 백엔드 스프링부트 서버와 통신하는 모듈
+ * 게임 API 클라이언트 (하이브리드 모드)
+ * 안드로이드 앱 환경에서는 ApiBridge를, 웹 환경에서는 fetch를 사용하여 통신합니다.
  */
-
 class GameAPI {
-    constructor(baseURL = 'http://localhost:8080/api') {
-        this.baseURL = baseURL;
+    constructor() {
+        // `window.Android`의 존재 여부로 네이티브 브릿지 사용 가능 여부를 판단합니다.
+        this.useBridge = typeof window.Android !== 'undefined';
+        this.isNewPlayer = !localStorage.getItem('playerId');
         this.playerId = this.generatePlayerId();
+
+        console.log(`API 클라이언트 초기화. 브릿지 사용: ${this.useBridge}`);
+        if (this.isNewPlayer) {
+            console.log("새로운 플레이어 세션이 시작되었습니다.");
+        }
     }
 
     /**
-     * 플레이어 ID 생성 (브라우저 기반)
+     * 플레이어 ID를 생성하거나 localStorage에서 불러옵니다.
      */
     generatePlayerId() {
         let playerId = localStorage.getItem('playerId');
@@ -22,144 +28,117 @@ class GameAPI {
     }
 
     /**
-     * HTTP 요청 헬퍼
+     * API 요청을 처리하는 중앙 함수입니다.
+     * @param {string} methodName - 호출할 ApiBridge의 메소드 이름
+     * @param {object} fetchOptions - fetch를 위한 옵션 (url, method, body)
+     * @param {...any} bridgeArgs - ApiBridge 메소드에 전달할 인자들
      */
-    async request(endpoint, options = {}) {
-        const url = `${this.baseURL}${endpoint}`;
-        const defaultOptions = {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        };
+    async request(methodName, fetchOptions, ...bridgeArgs) {
+        if (this.useBridge) {
+            // --- 안드로이드 ApiBridge 사용 --- 
+            return new Promise((resolve, reject) => {
+                if (typeof window.Android[methodName] !== 'function') {
+                    return reject(new Error(`ApiBridge에 ${methodName} 메소드가 존재하지 않습니다.`));
+                }
 
-        const finalOptions = { ...defaultOptions, ...options };
+                // 고유한 콜백 함수 이름 생성
+                const callbackName = `__native_callback_${methodName}_${Date.now()}`;
 
-        try {
-            const response = await fetch(url, finalOptions);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                // 결과 처리를 위한 전역 콜백 함수 정의
+                window[callbackName] = (result, error) => {
+                    if (error) {
+                        console.error(`ApiBridge Error (${methodName}):`, error);
+                        try {
+                            reject(JSON.parse(error)); // 에러가 JSON 문자열일 경우 파싱
+                        } catch (e) {
+                            reject(error);
+                        }
+                    } else {
+                        resolve(result);
+                    }
+                    // 메모리 누수 방지를 위해 사용한 콜백 함수 삭제
+                    delete window[callbackName];
+                };
+
+                // 네이티브 메소드 호출 (객체 인자는 JSON 문자열로 변환)
+                try {
+                    const finalArgs = bridgeArgs.map(arg => 
+                        (typeof arg === 'object' && arg !== null) ? JSON.stringify(arg) : arg
+                    );
+                    window.Android[methodName](...finalArgs, callbackName);
+                } catch (e) {
+                    console.error(`ApiBridge 호출 중 에러 발생 (${methodName}):`, e);
+                    reject(e);
+                    delete window[callbackName];
+                }
+            });
+        } else {
+            // --- 웹 환경 fetch 사용 --- 
+            const options = {
+                headers: { 'Content-Type': 'application/json' },
+                ...fetchOptions
+            };
+            if (options.body) {
+                options.body = JSON.stringify(options.body);
             }
-            
-            return await response.json();
-        } catch (error) {
-            console.error('API 요청 실패:', error);
-            throw error;
+
+            try {
+                const response = await fetch("http://localhost:8080/api" + fetchOptions.url, options);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('API 요청 실패:', error);
+                throw error;
+            }
         }
     }
 
-    /**
-     * 모든 퍼즐 정보 조회
-     */
-    async getAllPuzzles() {
-        return await this.request('/puzzle/all');
-    }
+    // --- Controller의 각 API를 호출하는 메소드들 ---
 
-    /**
-     * 플레이어별 퍼즐 상태 조회
-     */
     async getPlayerPuzzles() {
-        return await this.request(`/puzzle/player/${this.playerId}`);
+        if (this.isNewPlayer) {
+            await this.resetProgress();
+            this.isNewPlayer = false; 
+        }
+        // ApiBridge에는 getPlayerPuzzles가 없으므로 getProgress로 대체
+        return this.request('getProgress', { url: `/game/progress/${this.playerId}` }, this.playerId);
     }
-
-    /**
-     * 특정 퍼즐 정보 조회
-     */
-    async getPuzzle(puzzleId) {
-        return await this.request(`/puzzle/${puzzleId}`);
-    }
-
-    /**
-     * 퍼즐 정답 제출
-     */
+    
     async submitPuzzleAnswer(puzzleId, answer) {
-        const requestBody = {
-            playerId: this.playerId,
-            puzzleId: puzzleId,
-            answer: answer
-        };
-
-        return await this.request('/puzzle/submit', {
-            method: 'POST',
-            body: JSON.stringify(requestBody)
-        });
+        const body = { playerId: this.playerId, puzzleId, answer };
+        // ApiBridge에는 submitPuzzleAnswer가 없으므로 ApiService에 정의된 것을 호출한다고 가정
+        return this.request('submitPuzzleAnswer', { url: '/puzzle/submit', method: 'POST', body }, body);
     }
 
-    /**
-     * 퍼즐 상태 확인 (잠금/완료)
-     */
-    async getPuzzleStatus(puzzleId) {
-        return await this.request(`/puzzle/status/${this.playerId}/${puzzleId}`);
-    }
-
-    /**
-     * 게임 진행 상태 조회
-     */
-    async getGameProgress() {
-        return await this.request(`/game/progress/${this.playerId}`);
-    }
-
-    /**
-     * 게임 진행 상태 저장
-     */
-    async saveGameProgress(progress) {
-        return await this.request('/game/progress', {
-            method: 'POST',
-            body: JSON.stringify(progress)
-        });
-    }
-
-    /**
-     * 퍼즐 완료 처리
-     */
     async completePuzzle(puzzleId) {
-        return await this.request(`/game/complete-puzzle?playerId=${this.playerId}&puzzleId=${puzzleId}`, {
-            method: 'POST'
-        });
+        const params = new URLSearchParams({ playerId: this.playerId, puzzleId });
+        return this.request('completePuzzle', { url: `/game/complete-puzzle?${params}`, method: 'POST' }, this.playerId, puzzleId);
     }
 
-    /**
-     * 게임 진행 상태 리셋
-     */
     async resetProgress() {
-        return await this.request(`/game/reset/${this.playerId}`, {
-            method: 'POST'
-        });
+        return this.request('resetProgress', { url: `/game/reset/${this.playerId}`, method: 'POST' }, this.playerId);
     }
 
-    /**
-     * 모든 퍼즐 잠금 해제 (개발용)
-     */
     async unlockAll() {
-        return await this.request(`/game/unlock-all/${this.playerId}`, {
-            method: 'POST'
-        });
+        return this.request('unlockAll', { url: `/game/unlock-all/${this.playerId}`, method: 'POST' }, this.playerId);
     }
 
-    /**
-     * 게임 정보 조회
-     */
+    async getPuzzleStatus(puzzleId) {
+        return this.request('getPuzzleStatus', { url: `/game/puzzle-status/${this.playerId}/${puzzleId}` }, this.playerId, puzzleId);
+    }
+
     async getGameInfo() {
-        return await this.request('/game/info');
+        return this.request('getGameInfo', { url: '/game/info' });
     }
 
-    /**
-     * 퍼즐 순서 조회
-     */
-    async getPuzzleOrder() {
-        return await this.request('/puzzle/order');
-    }
+    // --- 기존 유틸리티 메소드들 ---
 
-    /**
-     * 플레이어 ID 조회
-     */
     getPlayerId() {
         return this.playerId;
     }
 
-    /**
-     * 플레이어 ID 재설정
-     */
     resetPlayerId() {
         localStorage.removeItem('playerId');
         this.playerId = this.generatePlayerId();
